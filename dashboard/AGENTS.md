@@ -19,15 +19,14 @@ Tailscale devices (redmi-pad tablet, homebox laptop).
 - **Zero system-level dependencies.** The backend uses only Python
   stdlib + psutil. The frontend uses vanilla JS and plain CSS. No
   build step, no node_modules, no webpack.
-- **Tailscale is the intended network boundary for the dashboard.**
-  Binds `0.0.0.0:8787` so the Tailscale IP `100.98.6.47` works for
-  tailnet devices. ufw (active since 2026-06-16) currently allows
-  8787/tcp on all interfaces — including the public IP. **Next
-  tightening:** restrict to Tailscale subnet `100.64.0.0/10` via
-  `ufw allow from 100.64.0.0/10 to any port 8787`, or bind the
-  systemd unit to the Tailscale IP only. Don't expose it publicly
-  via port-forward. If Bradley ever needs public access, add
-  Tailscale Funnel or a reverse proxy with auth — not port-forward.
+- **Tailscale is the network boundary for the dashboard.** Binds
+  `0.0.0.0:8787` so the Tailscale IP `100.98.6.47` works for tailnet
+  devices. ufw (active since 2026-06-16) restricts 8787/tcp to the
+  Tailscale subnet `100.64.0.0/10` — public route is closed. SSH
+  (22/tcp) remains open on all interfaces, since that's the access
+  path. Don't expose the dashboard publicly via port-forward. If
+  Bradley ever needs public access, add Tailscale Funnel or a
+  reverse proxy with auth — not port-forward.
 - **Path traversal is blocked in the static file handler.** Don't
   remove the `STATIC_DIR.resolve()` containment check.
 
