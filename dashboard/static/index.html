@@ -50,17 +50,36 @@
     <!-- ============ DASHBOARD TAB ============ -->
     <section class="panel" id="panel-dashboard" role="tabpanel" aria-hidden="false">
 
+      <!-- Main Viewscreen — the "forward window" of the bridge -->
+      <div class="bridge-header">
+        <div class="viewscreen-line viewscreen-primary">
+          <span class="ship-name">USS AGENTOS</span>
+          <span class="ship-registry">NCC-8787</span>
+          <span class="ship-class">Galaxy&nbsp;Class</span>
+        </div>
+        <div class="viewscreen-line viewscreen-clock">
+          <span class="stardate" id="stardate">STARDATE —</span>
+          <span class="clock-sep">◆</span>
+          <span class="local-time" id="local-time">LOCAL —</span>
+        </div>
+        <div class="viewscreen-line viewscreen-heading">
+          <span class="heading-label">HEADING</span>
+          <span class="heading-text">ALL STATIONS NOMINAL · HOLDING POSITION</span>
+        </div>
+      </div>
+
       <!-- Two-column: crew+metrics (left) | recent tasks (right) -->
       <div class="two-column">
 
         <div class="left-stack">
-          <aside class="sidebar" aria-label="Agents">
-            <h2 class="sidebar-title">Crew</h2>
+          <aside class="sidebar" aria-label="Operations Stations">
+            <h2 class="sidebar-title">Operations Stations</h2>
             <ul class="agent-list" id="agent-list">
               <li class="agent-card" data-agent="ferret">
                 <div class="agent-head">
                   <span class="agent-emoji">🔍</span>
                   <span class="agent-name">Ferret</span>
+                  <span class="agent-station">SCIENCE</span>
                 </div>
                 <div class="agent-role">Research</div>
                 <div class="agent-excerpt">Loading…</div>
@@ -70,6 +89,7 @@
                 <div class="agent-head">
                   <span class="agent-emoji">✍️</span>
                   <span class="agent-name">Scribe</span>
+                  <span class="agent-station">COMMUNICATIONS</span>
                 </div>
                 <div class="agent-role">Writing</div>
                 <div class="agent-excerpt">Loading…</div>
@@ -79,6 +99,7 @@
                 <div class="agent-head">
                   <span class="agent-emoji">🛠️</span>
                   <span class="agent-name">Dev</span>
+                  <span class="agent-station">ENGINEERING</span>
                 </div>
                 <div class="agent-role">Engineering</div>
                 <div class="agent-excerpt">Loading…</div>
@@ -87,13 +108,13 @@
             </ul>
           </aside>
 
-          <section class="content metrics-content" aria-label="VPS Metrics">
-            <h2 class="content-title">remotebox · VPS metrics</h2>
+          <section class="content metrics-content" aria-label="Ship's Status">
+            <h2 class="content-title">remotebox · Ship's Status</h2>
 
             <div class="metric-grid">
               <div class="metric-card" data-metric="memory">
                 <div class="metric-head">
-                  <span class="metric-label">Memory</span>
+                  <span class="metric-label">Deflector Shields</span>
                   <span class="metric-value" id="mem-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="mem-bar"></div></div>
@@ -102,7 +123,7 @@
 
               <div class="metric-card" data-metric="cpu">
                 <div class="metric-head">
-                  <span class="metric-label">CPU</span>
+                  <span class="metric-label">Warp Core</span>
                   <span class="metric-value" id="cpu-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="cpu-bar"></div></div>
@@ -111,7 +132,7 @@
 
               <div class="metric-card" data-metric="storage">
                 <div class="metric-head">
-                  <span class="metric-label">Storage</span>
+                  <span class="metric-label">Cargo Bay</span>
                   <span class="metric-value" id="stor-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="stor-bar"></div></div>
@@ -120,15 +141,15 @@
             </div>
 
             <div class="metric-footer">
-              <span id="last-update">Last update: —</span>
+              <span id="last-update">Last scan: —</span>
               <span class="dim">·</span>
-              <span>Polling every 2s</span>
+              <span>Sensors polling every 2s</span>
             </div>
           </section>
         </div>
 
-        <aside class="inspector" aria-label="Recent Tasks">
-          <h2 class="sidebar-title">Recent tasks</h2>
+        <aside class="inspector" aria-label="Captain's Log">
+          <h2 class="sidebar-title">Captain's Log</h2>
           <ul class="task-list" id="task-list">
             <li class="dim">Loading…</li>
           </ul>
@@ -139,15 +160,15 @@
     <!-- ============ SCHEDULE TAB ============ -->
     <section class="panel" id="panel-schedule" role="tabpanel" aria-hidden="true">
       <div class="two-panel">
-        <section class="content" aria-label="System Cron">
-          <h2 class="content-title">System cron <span class="dim">/ /etc/cron.d + crontab</span></h2>
+        <section class="content" aria-label="Standing Orders">
+          <h2 class="content-title">Standing Orders <span class="dim">/ system cron · /etc/cron.d + crontab</span></h2>
           <div id="system-cron">
             <p class="dim">Loading…</p>
           </div>
         </section>
 
-        <section class="content" aria-label="Hermes Cron">
-          <h2 class="content-title">Hermes scheduled <span class="dim">/ hermes cron list</span></h2>
+        <section class="content" aria-label="Mission Timeline">
+          <h2 class="content-title">Mission Timeline <span class="dim">/ hermes scheduled tasks</span></h2>
           <div id="hermes-cron">
             <p class="dim">Loading…</p>
           </div>

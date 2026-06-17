@@ -41,6 +41,39 @@
     return "";
   }
 
+  /**
+   * Compute a TNG-style 5-digit stardate from a real date.
+   * Formula: SD = (Y - 2000) * 1000 + (day_of_year / 365.25) * 1000
+   * The "- 2000" base gives 5-digit numbers for our era (e.g. 2026 → 26XXX);
+   * the year-fraction term gives 1 decimal of resolution per day.
+   */
+  function computeStardate(date) {
+    date = date || new Date();
+    const year = date.getUTCFullYear();
+    const start = Date.UTC(year, 0, 0);
+    const diff = date.getTime() - start;
+    const dayOfYear = Math.floor(diff / 86400000);
+    const yearFrac = (dayOfYear - 1) / 365.25;
+    return ((year - 2000) * 1000 + yearFrac * 1000).toFixed(1);
+  }
+
+  function fmtLocalTime(d) {
+    return d.toLocaleTimeString("en-US", { hour12: false });
+  }
+
+  /**
+   * Map task phase → Starfleet-style log classification.
+   */
+  function classifyTask(phase) {
+    switch (phase) {
+      case "in-progress": return { tag: "PRIORITY",   cls: "log-priority" };
+      case "blocked":     return { tag: "STAND-BY",   cls: "log-standby" };
+      case "failed":      return { tag: "ALERT",      cls: "log-alert" };
+      case "done":        return { tag: "COMPLETED",  cls: "log-completed" };
+      default:            return { tag: "ROUTINE",    cls: "log-routine" };
+    }
+  }
+
   // -------- Metrics polling --------
   const pulse = document.getElementById("pulse");
   const lastUpdate = document.getElementById("last-update");
@@ -140,18 +173,22 @@
         .slice(0, 10);
 
       if (recent.length === 0) {
-        list.innerHTML = `<li class="dim">No tasks yet. Create one in the vault's Projects/AgentOS/tasks/ folder.</li>`;
+        list.innerHTML = `<li class="dim log-empty">No entries in the Captain's log yet.<br><span class="dim">Tasks are recorded automatically when they begin.</span></li>`;
       } else {
-        list.innerHTML = recent.map((t) => `
-          <li class="task-item" data-phase="${t.phase}">
-            <div class="task-title">${escapeHtml(t.title)}</div>
-            <div class="task-meta">
-              <span>${t.assigned_to}</span>
-              <span>·</span>
-              <span>${t.phase}</span>
+        const sd = computeStardate();
+        list.innerHTML = recent.map((t) => {
+          const c = classifyTask(t.phase);
+          return `
+          <li class="log-entry" data-phase="${t.phase}">
+            <div class="log-meta">
+              <span class="log-stardate">SD ${sd}</span>
+              <span class="log-classification ${c.cls}">${c.tag}</span>
             </div>
+            <div class="log-title">${escapeHtml(t.title)}</div>
+            <div class="log-byline">${escapeHtml(t.assigned_to)}</div>
           </li>
-        `).join("");
+        `;
+        }).join("");
       }
     } catch (e) {
       console.error("agents load failed:", e);
@@ -219,9 +256,21 @@
       .replace(/'/g, "&#39;");
   }
 
+  // -------- Bridge viewscreen clock --------
+  const stardateEl = document.getElementById("stardate");
+  const localTimeEl = document.getElementById("local-time");
+
+  function tickClock() {
+    const now = new Date();
+    if (stardateEl)  stardateEl.textContent = `STARDATE ${computeStardate(now)}`;
+    if (localTimeEl) localTimeEl.textContent = `LOCAL ${fmtLocalTime(now)}`;
+  }
+
   // -------- Bootstrap --------
+  tickClock();
   pollMetrics();
   loadAgents();
+  setInterval(tickClock, 1000);
   setInterval(pollMetrics, 2000);
   setInterval(loadAgents, 15000);  // agents/tasks change less often
 })();

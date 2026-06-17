@@ -620,4 +620,207 @@ main { padding: 16px; }
 @media (max-width: 900px) {
   [data-skin="starship"] .agent-list { gap: 6px; }
   [data-skin="starship"] .metric-grid { grid-template-columns: 1fr; }
+  [data-skin="starship"] .viewscreen-line { flex-wrap: wrap; }
+  [data-skin="starship"] .ship-class { display: none; }
 }
+
+/* ============================================================== */
+/*  BRIDGE — Captain's Seat View (v0.2)                            */
+/*  Turns the dashboard into a first-person bridge view.            */
+/*  - Main Viewscreen (ship name, stardate, heading)                */
+/*  - Operations Stations (crew as bridge stations)                 */
+/*  - Ship's Status (VPS metrics as ship systems)                   */
+/*  - Captain's Log (tasks as log entries)                          */
+/* ============================================================== */
+
+/* Main Viewscreen — the "forward window" of the bridge */
+[data-skin="starship"] .bridge-header {
+  background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+  border: 1px solid var(--border);
+  border-left: 10px solid var(--amber);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 14px 22px 12px 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle scanline effect — like a viewscreen's phosphor glow */
+[data-skin="starship"] .bridge-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(255, 153, 0, 0.015) 3px,
+    rgba(255, 153, 0, 0.015) 4px
+  );
+  pointer-events: none;
+}
+
+[data-skin="starship"] .viewscreen-line {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+[data-skin="starship"] .viewscreen-primary {
+  margin-bottom: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--amber-2);
+}
+[data-skin="starship"] .ship-name {
+  color: var(--amber);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(255, 153, 0, 0.4);
+}
+[data-skin="starship"] .ship-registry {
+  color: var(--tan);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-skin="starship"] .ship-class {
+  color: var(--fg-mute);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+[data-skin="starship"] .viewscreen-clock {
+  margin: 8px 0 4px 0;
+  font-size: 18px;
+}
+[data-skin="starship"] .stardate {
+  color: var(--amber);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 6px rgba(255, 153, 0, 0.3);
+}
+[data-skin="starship"] .clock-sep {
+  color: var(--tan);
+  font-size: 10px;
+  opacity: 0.6;
+}
+[data-skin="starship"] .local-time {
+  color: var(--tan);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-skin="starship"] .viewscreen-heading {
+  margin-top: 6px;
+  font-size: 11px;
+}
+[data-skin="starship"] .heading-label {
+  color: #000;                         /* black text on amber pill */
+  background: var(--amber);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+}
+[data-skin="starship"] .heading-text {
+  color: var(--tan);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Operations Stations — station badge next to each crew name */
+[data-skin="starship"] .agent-station {
+  margin-left: auto;
+  color: var(--tan);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: rgba(255, 153, 0, 0.08);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+}
+[data-skin="starship"] .agent-card[data-agent="ferret"] .agent-station { color: var(--blue); border-color: var(--blue); }
+[data-skin="starship"] .agent-card[data-agent="scribe"] .agent-station { color: var(--amber); border-color: var(--amber); }
+[data-skin="starship"] .agent-card[data-agent="dev"]    .agent-station { color: var(--purple); border-color: var(--purple); }
+
+/* Captain's Log entries */
+[data-skin="starship"] .log-entry {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 8px 10px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+[data-skin="starship"] .log-entry[data-phase="in-progress"] { border-left-color: var(--blue); }
+[data-skin="starship"] .log-entry[data-phase="done"]        { border-left-color: var(--green); opacity: 0.7; }
+[data-skin="starship"] .log-entry[data-phase="failed"]      { border-left-color: var(--red); }
+[data-skin="starship"] .log-entry[data-phase="blocked"]     { border-left-color: var(--red); opacity: 0.7; }
+
+[data-skin="starship"] .log-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+[data-skin="starship"] .log-stardate {
+  color: var(--amber);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 4px rgba(255, 153, 0, 0.3);
+}
+[data-skin="starship"] .log-classification {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  border: 1px solid currentColor;
+}
+[data-skin="starship"] .log-routine   { color: var(--tan); }
+[data-skin="starship"] .log-priority  { color: var(--blue); }
+[data-skin="starship"] .log-standby   { color: var(--amber); }
+[data-skin="starship"] .log-alert     { color: var(--red); animation: brand-alert-pulse 0.9s ease-in-out infinite; }
+[data-skin="starship"] .log-completed { color: var(--green); }
+
+[data-skin="starship"] .log-title {
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+[data-skin="starship"] .log-byline {
+  color: var(--tan);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+[data-skin="starship"] .log-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--fg-mute);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+}
+[data-skin="starship"] .log-empty .dim { font-size: 10px; }
