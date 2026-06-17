@@ -1,0 +1,33 @@
+# AgentOS Dashboard — docker-compose
+# Single-container deploy. Mounts the vault so the dashboard can read
+# tasks/personas from /home/omar/BradleyVault/Projects/AgentOS/.
+#
+# Usage:
+#   docker compose up -d
+#   docker compose logs -f
+#   docker compose down
+#
+# Then visit: http://<host-ip>:8787 from any device on your Tailscale network.
+services:
+  dashboard:
+    build: .
+    image: agentos-dashboard:0.1
+    container_name: agentos-dashboard
+    restart: unless-stopped
+    ports:
+      - "8787:8787"   # bind on host so Tailscale can reach it
+    volumes:
+      # Read-only mount of the vault so the dashboard can list tasks + read personas.
+      # The server is read-only by design (never writes to the vault).
+      - /home/omar/BradleyVault:/vault:ro
+    environment:
+      # Tell the server where to find tasks + personas inside the container
+      # (the server uses absolute paths by default; override with these envs if
+      # you mount the vault elsewhere).
+      VAULT_TASKS_DIR: /vault/Projects/AgentOS/tasks
+      AGENT_PERSONAS_DIR: /vault/Projects/AgentOS/agents
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8787/api/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

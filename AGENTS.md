@@ -42,6 +42,6 @@ After any meaningful change:
 
 ## Child DOX Index
 
-This repo is new. The Child DOX Index will populate as we add code.
-
-<!-- When directories are added, list them here with one-line summaries. -->
+| Path | Purpose | Local rules |
+|---|---|---|
+| `dashboard/` | Self-hosted web dashboard — VPS metrics, 3-agent status, schedule view. Served to Tailscale devices. | Read `dashboard/AGENTS.md` before editing. |

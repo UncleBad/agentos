@@ -1,0 +1,44 @@
+# AgentOS Dashboard — systemd unit
+#
+# Install:
+#   1. Copy this file to /etc/systemd/system/agentos-dashboard.service
+#   2. sudo systemctl daemon-reload
+#   3. sudo systemctl enable --now agentos-dashboard
+#   4. sudo systemctl status agentos-dashboard
+#
+# View logs:
+#   journalctl -u agentos-dashboard -f
+#
+# Why no Docker: the server has zero system-level deps beyond psutil and
+# stdlib. Running directly under systemd is simpler, faster to start, and
+# doesn't require root for the container runtime. Docker is also provided
+# (see docker-compose.yml) for users who want it.
+
+[Unit]
+Description=AgentOS Dashboard (VPS metrics + 3-agent status + schedule)
+Documentation=https://github.com/UncleBad/agentos/tree/main/dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=omar
+Group=omar
+WorkingDirectory=/home/omar/agentos/dashboard
+ExecStart=/usr/bin/python3 /home/omar/agentos/dashboard/server.py --host 0.0.0.0 --port 8787
+Restart=always
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/omar/BradleyVault
+PrivateTmp=true
+
+# Allow binding on port 8787 without root
+# (systemd doesn't need this for unprivileged ports; left as a comment for
+# future reference if we ever switch to port 80/443.)
+
+[Install]
+WantedBy=multi-user.target
