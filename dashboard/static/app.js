@@ -45,6 +45,8 @@
   const pulse = document.getElementById("pulse");
   const lastUpdate = document.getElementById("last-update");
   const uptimeEl = document.getElementById("uptime");
+  const shipStatus = document.getElementById("ship-status");
+  const shipStatusLabel = shipStatus?.querySelector(".ship-status-label");
 
   async function pollMetrics() {
     try {
@@ -75,6 +77,18 @@
     // Footer
     uptimeEl.textContent = `uptime ${fmtUptime(m.uptime_seconds)}`;
     lastUpdate.textContent = `Last update: ${fmtTimestamp(new Date())}`;
+
+    // Ship status pill: green/amber/red based on worst metric
+    if (shipStatus) {
+      const pcts = [m.memory.percent, m.cpu.percent, m.storage.percent];
+      const worst = Math.max(...pcts);
+      let level, label;
+      if (worst >= 90)      { level = "alert";    label = "ALERT"; }
+      else if (worst >= 70) { level = "caution";  label = "CAUTION"; }
+      else                  { level = "nominal";  label = "NOMINAL"; }
+      shipStatus.setAttribute("data-status", level);
+      if (shipStatusLabel) shipStatusLabel.textContent = label;
+    }
   }
 
   function setMetric(name, pct, valueText, detailText) {

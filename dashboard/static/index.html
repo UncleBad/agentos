@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-skin="ares">
+<html lang="en" data-skin="starship">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -17,6 +17,10 @@
       <button class="tab" role="tab" data-tab="schedule" aria-selected="false">Schedule</button>
     </nav>
     <div class="topbar-right">
+      <span class="ship-status" id="ship-status" data-status="nominal">
+        <span class="ship-status-dot"></span>
+        <span class="ship-status-label">NOMINAL</span>
+      </span>
       <span class="uptime" id="uptime">—</span>
       <span class="pulse" id="pulse" title="Live">●</span>
     </div>

@@ -1,7 +1,16 @@
 /* AgentOS Dashboard styles
- * Pattern lifted from nesquena/hermes-webui (data-skin theme + three-panel layout)
- * Colors hand-picked for Captain's "ares" skin (warm dark slate).
+ * Pattern lifted from nesquena/hermes-webui (data-skin theme + three-panel layout).
+ * Two skins:
+ *   - "ares"     — warm dark slate (default before starship upgrade)
+ *   - "starship" — LCARS-inspired: black, amber, asymmetric "okuda" panels,
+ *                  pill data displays, bracketed labels. Playful nod to
+ *                  the Star Trek TNG/DS9/VOY computer interface.
+ *
+ * Antonio is the closest free font to LCARS's iconic Eurostile Bold Extended.
+ * Loads from Google Fonts with a Helvetica/Arial narrow fallback for
+ * offline / Tailscale-only clients.
  */
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&display=swap');
 
 :root,
 [data-skin="ares"] {
@@ -283,4 +292,322 @@ main { padding: 16px; }
   .inspector { order: 3; }
   /* On narrow screens, stack the metric cards vertically again */
   .metric-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================== */
+/*  SKIN: starship — LCARS-inspired (Star Trek TNG/DS9/VOY)        */
+/* ============================================================== */
+[data-skin="starship"] {
+  --bg:        #000000;
+  --bg-2:      #0a0a0a;
+  --bg-3:      #141414;
+  --border:    #2a2a2a;
+
+  --amber:     #ff9900;   /* the iconic LCARS orange */
+  --amber-2:   #b37222;   /* darker amber for borders/secondary */
+  --tan:       #ffcc99;   /* light tan, common in DS9-era LCARS */
+  --red:       #cc4444;   /* alert */
+  --blue:      #4488ff;   /* ops */
+  --purple:    #cc66cc;   /* science */
+  --green:     #66cc66;   /* nominal */
+
+  --fg:        var(--amber);
+  --fg-dim:    var(--tan);
+  --fg-mute:   #7a5424;
+
+  --accent:    var(--amber);
+  --good:      var(--green);
+  --warn:      var(--amber);
+  --bad:       var(--red);
+  --mem:       var(--blue);
+  --cpu:       var(--amber);
+  --stor:      var(--purple);
+  --bar-track: #1a1a1a;
+
+  /* Asymmetric "okuda" corners: rounded right, flat left by default */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  --t-fast: 120ms;
+  --t-med:  200ms;
+
+  font-family: 'Antonio', 'Helvetica Neue', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+/* Body: pure black, Antonio, tabular numerics */
+[data-skin="starship"] body,
+[data-skin="starship"] html {
+  background: #000;
+  color: var(--amber);
+  font-family: 'Antonio', 'Helvetica Neue', 'Arial Narrow', sans-serif;
+  font-size: 14px;
+  text-transform: none;
+}
+
+/* ===== Topbar: thick amber rule under a black bar ===== */
+[data-skin="starship"] .topbar {
+  background: #000;
+  border-bottom: 4px solid var(--amber);
+  padding: 0 24px;
+  height: 56px;
+  box-shadow: 0 2px 12px rgba(255, 153, 0, 0.15);
+}
+[data-skin="starship"] .brand-mark { color: var(--amber); font-size: 22px; }
+[data-skin="starship"] .brand-text { color: var(--amber); text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; }
+[data-skin="starship"] .brand-text .dim { color: var(--tan); font-weight: 400; }
+
+/* Tabs: pill buttons. Active = solid amber with black text */
+[data-skin="starship"] .tab {
+  color: var(--tan);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  padding: 8px 22px;
+  border-radius: var(--r-pill);
+  border: 2px solid transparent;
+  background: transparent;
+}
+[data-skin="starship"] .tab:hover {
+  color: var(--amber);
+  background: rgba(255, 153, 0, 0.12);
+  border-color: var(--amber);
+}
+[data-skin="starship"] .tab[aria-selected="true"] {
+  color: #000;
+  background: var(--amber);
+  border-color: var(--amber);
+  box-shadow: 0 0 16px rgba(255, 153, 0, 0.4);
+}
+
+[data-skin="starship"] .topbar-right { color: var(--tan); text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; }
+[data-skin="starship"] .uptime { color: var(--amber); font-weight: 600; }
+[data-skin="starship"] .pulse { color: var(--green); font-size: 12px; }
+[data-skin="starship"] .pulse.stale { color: var(--red); }
+
+/* Ship status pill — "LCARS alert" style */
+.ship-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  transition: all var(--t-fast);
+}
+.ship-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+.ship-status[data-status="nominal"]  .ship-status-label { color: var(--green); }
+.ship-status[data-status="caution"]  { border-color: var(--amber); }
+.ship-status[data-status="caution"]  .ship-status-dot  { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.ship-status[data-status="caution"]  .ship-status-label { color: var(--amber); }
+.ship-status[data-status="alert"]    { border-color: var(--red); animation: alert-flash 1s ease-in-out infinite; }
+.ship-status[data-status="alert"]    .ship-status-dot  { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.ship-status[data-status="alert"]    .ship-status-label { color: var(--red); }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+@keyframes alert-flash {
+  0%, 100% { background: rgba(204, 68, 68, 0.05); }
+  50%      { background: rgba(204, 68, 68, 0.20); }
+}
+
+/* ===== Panels: dark with amber "okuda" spine on the left ===== */
+[data-skin="starship"] .sidebar,
+[data-skin="starship"] .content,
+[data-skin="starship"] .inspector {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 8px solid var(--amber);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 16px 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 153, 0, 0.04);
+}
+
+/* Schedule tab uses a thinner spine, different accent */
+[data-skin="starship"] #panel-schedule .content {
+  border-left-color: var(--blue);
+}
+
+/* Section titles: bracketed label, amber rule under */
+[data-skin="starship"] .sidebar-title,
+[data-skin="starship"] .content-title {
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  font-size: 11px;
+  border-bottom: 1px solid var(--amber-2);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+[data-skin="starship"] .content-title::before { content: "[ "; color: var(--tan); font-weight: 400; }
+[data-skin="starship"] .content-title::after  { content: " ]"; color: var(--tan); font-weight: 400; }
+[data-skin="starship"] .content-title .dim { color: var(--tan); font-weight: 400; text-transform: none; letter-spacing: 0; }
+[data-skin="starship"] .content-title .dim::before,
+[data-skin="starship"] .content-title .dim::after { content: none; }
+
+/* ===== Agent cards: dark with amber spine, then accent color per agent ===== */
+[data-skin="starship"] .agent-list { gap: 8px; }
+[data-skin="starship"] .agent-card {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--amber);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  padding: 10px 14px;
+  position: relative;
+}
+[data-skin="starship"] .agent-card[data-agent="ferret"] { border-left-color: var(--blue); }
+[data-skin="starship"] .agent-card[data-agent="scribe"] { border-left-color: var(--amber); }
+[data-skin="starship"] .agent-card[data-agent="dev"]    { border-left-color: var(--purple); }
+[data-skin="starship"] .agent-card:hover { transform: none; background: #0a0a0a; box-shadow: inset 4px 0 0 var(--tan); }
+[data-skin="starship"] .agent-head { gap: 10px; }
+[data-skin="starship"] .agent-emoji { font-size: 18px; }
+[data-skin="starship"] .agent-name { color: var(--amber); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+[data-skin="starship"] .agent-role { color: var(--tan); font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; }
+[data-skin="starship"] .agent-excerpt { color: var(--fg-mute); font-style: normal; font-size: 11px; }
+[data-skin="starship"] .agent-task-count {
+  color: var(--amber);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: rgba(255, 153, 0, 0.08);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* ===== Metrics: dark with metric-color spine, big amber numbers ===== */
+[data-skin="starship"] .metrics-content { padding: 12px 16px; }
+[data-skin="starship"] .metrics-content .content-title { margin-bottom: 10px; }
+[data-skin="starship"] .metric-grid { gap: 10px; margin-top: 6px; }
+[data-skin="starship"] .metric-card {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  padding: 10px 12px;
+}
+[data-skin="starship"] .metric-card[data-metric="memory"]  { border-left-color: var(--mem); }
+[data-skin="starship"] .metric-card[data-metric="cpu"]     { border-left-color: var(--cpu); }
+[data-skin="starship"] .metric-card[data-metric="storage"] { border-left-color: var(--stor); }
+
+[data-skin="starship"] .metric-head { margin-bottom: 6px; }
+[data-skin="starship"] .metric-label {
+  color: var(--tan);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+}
+[data-skin="starship"] .metric-label::before { content: "▸ "; color: var(--amber); }
+[data-skin="starship"] .metric-value { color: var(--amber); font-size: 22px; font-weight: 700; }
+[data-skin="starship"] .metric-detail { color: var(--tan); font-size: 10px; margin-top: 4px; opacity: 0.8; }
+
+/* Bar: full pill */
+[data-skin="starship"] .bar {
+  height: 6px;
+  background: var(--bar-track);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+}
+[data-skin="starship"] .bar-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  box-shadow: 0 0 8px currentColor;
+}
+[data-skin="starship"] .metric-card[data-metric="memory"]  .bar-fill { background: var(--mem); }
+[data-skin="starship"] .metric-card[data-metric="cpu"]     .bar-fill { background: var(--cpu); }
+[data-skin="starship"] .metric-card[data-metric="storage"] .bar-fill { background: var(--stor); }
+
+[data-skin="starship"] .metric-card.warn  .bar-fill { background: var(--amber); }
+[data-skin="starship"] .metric-card.bad   .bar-fill { background: var(--red); }
+[data-skin="starship"] .metric-card.warn  .metric-value { color: var(--amber); text-shadow: 0 0 8px var(--amber); }
+[data-skin="starship"] .metric-card.bad   .metric-value { color: var(--red);   text-shadow: 0 0 8px var(--red); }
+
+[data-skin="starship"] .metric-footer {
+  color: var(--fg-mute);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-top: 12px;
+}
+[data-skin="starship"] .metric-footer .dim { color: var(--amber); }
+
+/* ===== Tasks inspector ===== */
+[data-skin="starship"] .task-list { gap: 6px; }
+[data-skin="starship"] .task-item {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 8px 10px;
+}
+[data-skin="starship"] .task-item[data-phase="done"]        { border-left-color: var(--green); opacity: 0.7; }
+[data-skin="starship"] .task-item[data-phase="in-progress"] { border-left-color: var(--blue); }
+[data-skin="starship"] .task-item[data-phase="failed"]      { border-left-color: var(--red); }
+[data-skin="starship"] .task-item[data-phase="blocked"]     { border-left-color: var(--red); opacity: 0.7; }
+[data-skin="starship"] .task-title { color: var(--amber); text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+[data-skin="starship"] .task-meta  { color: var(--tan); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* ===== Cron tables ===== */
+[data-skin="starship"] .cron-table th {
+  color: var(--amber);
+  background: #000;
+  border-bottom: 2px solid var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 10px;
+}
+[data-skin="starship"] .cron-table td {
+  border-bottom: 1px solid var(--border);
+  color: var(--tan);
+  font-size: 12px;
+}
+[data-skin="starship"] .cron-table tr:hover td { background: rgba(255, 153, 0, 0.04); }
+[data-skin="starship"] .cron-table code {
+  background: #000;
+  color: var(--amber);
+  border: 1px solid var(--amber-2);
+  border-radius: var(--r-pill);
+  padding: 2px 10px;
+  font-family: 'Antonio', monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+[data-skin="starship"] .cron-table th:first-child,
+[data-skin="starship"] .cron-table td:first-child {
+  width: 1%;
+  white-space: nowrap;
+  padding-right: 18px;
+}
+[data-skin="starship"] .cron-empty {
+  color: var(--tan);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 11px;
+  padding: 32px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+}
+
+/* ===== Mobile: same as base, but stack agent-cards too ===== */
+@media (max-width: 900px) {
+  [data-skin="starship"] .agent-list { gap: 6px; }
+  [data-skin="starship"] .metric-grid { grid-template-columns: 1fr; }
 }
