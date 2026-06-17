@@ -25,6 +25,21 @@ Tailscale devices (redmi-pad tablet, homebox laptop).
 - **Path traversal is blocked in the static file handler.** Don't
   remove the `STATIC_DIR.resolve()` containment check.
 
+## System dependencies
+
+The systemd unit runs `/usr/bin/python3` (system Python), not a
+virtualenv. `psutil` must be available there.
+
+- **Ubuntu/Debian:** `sudo apt install -y python3-psutil`
+- **Fedora/RHEL:** `sudo dnf install -y python3-psutil`
+- **Alpine:** `sudo apk add py3-psutil`
+- **macOS (brew):** `brew install psutil` (but macOS won't run systemd
+  anyway — use Docker or `launchd` instead)
+
+If psutil is missing from the system Python, the unit crashes on
+start with `ModuleNotFoundError: No module named 'psutil'`. Don't
+fix this with a venv — fix it with the system package manager.
+
 ## Files of interest
 
 - `server.py` — single-file backend. ~340 lines. Endpoints:

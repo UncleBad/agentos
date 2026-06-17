@@ -8,6 +8,11 @@ cron + Hermes cron jobs).
 no node_modules. Single file backend, three files frontend. ~50 MB Docker
 image or zero deps under systemd.
 
+**System dep (systemd only):** the unit uses `/usr/bin/python3`, so psutil
+must be available there. Install via your package manager
+(`sudo apt install -y python3-psutil` on Debian/Ubuntu). See
+`AGENTS.md` "System dependencies" for the full list per distro.
+
 **Design pattern:** Lifted from [`nesquena/hermes-webui`](https://github.com/nesquena/hermes-webui)
 (three-panel layout, `data-skin` theme system, vanilla JS frontend).
 Not a fork — written from scratch in ~400 lines.
