@@ -1,16 +1,17 @@
 /* AgentOS Dashboard styles
  * Pattern lifted from nesquena/hermes-webui (data-skin theme + three-panel layout).
- * Two skins:
- *   - "ares"     — warm dark slate (default before starship upgrade)
+ * Three skins:
+ *   - "horizon"  — modern 2026, easy on the eyes (current default).
+ *                  Calm dark blue-black, Inter, soft borders, no scanlines/glows.
+ *                  Captain's seat metaphor (ship/crew/horizons) rendered gently.
+ *   - "ares"     — warm dark slate (legacy, GitHub Dark-ish)
  *   - "starship" — LCARS-inspired: black, amber, asymmetric "okuda" panels,
- *                  pill data displays, bracketed labels. Playful nod to
- *                  the Star Trek TNG/DS9/VOY computer interface.
+ *                  pill data displays, bracketed labels. Preserved for nostalgia.
  *
- * Antonio is the closest free font to LCARS's iconic Eurostile Bold Extended.
- * Loads from Google Fonts with a Helvetica/Arial narrow fallback for
- * offline / Tailscale-only clients.
+ * Inter is the modern 2026 default — clean, highly readable, designed for screens.
+ * Loads from Google Fonts with a system-ui fallback for offline / Tailscale-only.
  */
-@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root,
 [data-skin="ares"] {
@@ -880,3 +881,451 @@ main { padding: 16px; }
   border-radius: var(--r-md);
 }
 [data-skin="starship"] .log-empty .dim { font-size: 10px; }
+
+/* ============================================================== */
+/* SKIN: horizon — modern 2026, easy on the eyes                    */
+/* ============================================================== */
+/* Calm dark mode for tired eyes. The captain's seat view (ship /   */
+/* crew / horizons) rendered in a contemporary style:               */
+/*   - Inter, normal tracking, mixed case                           */
+/*   - Deep blue-black background (not pure black)                  */
+/*   - Off-white text (not pure white)                              */
+/*   - Calm horizon-blue accent, muted status colors                */
+/*   - No scanlines, no glows, no flicker, no corner brackets       */
+/*   - Generous padding, soft borders, rounded corners             */
+/* Override the [data-skin="ares"] defaults that the body inherits. */
+/* ============================================================== */
+
+[data-skin="horizon"] {
+  /* Color tokens — calm, eye-friendly, modern */
+  --bg:           #0f1623;  /* deep blue-black, like night sky */
+  --bg-2:         #161e2e;  /* elevated surface (cards, panels) */
+  --bg-3:         #1c2536;  /* hover/active surface */
+  --bg-input:     #131a26;  /* inputs (not used yet) */
+  --border:       #1f2733;  /* subtle, low-contrast border */
+  --border-hover: #2d3548;  /* border on hover */
+
+  --fg:           #e4e9f0;  /* off-white, not pure white */
+  --fg-mute:      #8b95a8;  /* secondary text */
+  --fg-dim:       #5b6477;  /* tertiary text */
+
+  --accent:       #7eb6ff;  /* calm horizon blue */
+  --accent-2:     #a3c8ff;  /* hover/active */
+  --accent-soft:  rgba(126, 182, 255, 0.12);
+
+  --good:         #7ec99e;  /* sage green (nominal) */
+  --warn:         #e8b770;  /* warm tan (caution) */
+  --bad:          #e07b7b;  /* dusty coral (alert) */
+  --info:         #79c0ff;  /* info blue */
+  --purple:       #c4a5e4;  /* soft purple (engineering) */
+
+  --mem:          var(--info);
+  --cpu:          var(--accent);
+  --stor:         var(--purple);
+  --bar-track:    var(--bg-3);
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  --t-fast: 150ms ease;
+  --t-med:  250ms ease;
+}
+
+/* --- Base: Inter, comfortable line-height, off-white --- */
+[data-skin="horizon"] body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Topbar: clean elevated bar, soft borders --- */
+[data-skin="horizon"] .topbar {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px 20px;
+  margin: 16px;
+  margin-bottom: 0;
+  position: static;
+  height: auto;
+}
+[data-skin="horizon"] .brand-mark { color: var(--accent); }
+[data-skin="horizon"] .topbar-right { color: var(--fg-mute); font-size: 13px; }
+[data-skin="horizon"] .uptime { color: var(--fg); font-weight: 500; letter-spacing: 0; }
+[data-skin="horizon"] .pulse { color: var(--good); }
+
+/* --- Tabs: pill container, soft active state --- */
+[data-skin="horizon"] .tabs { margin-left: 8px; gap: 2px; background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 3px; }
+[data-skin="horizon"] .tab {
+  background: transparent;
+  border: 0;
+  color: var(--fg-mute);
+  padding: 6px 16px;
+  border-radius: var(--r-pill);
+  font: 500 13px/1 'Inter', system-ui, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+[data-skin="horizon"] .tab:hover { color: var(--fg); background: transparent; }
+[data-skin="horizon"] .tab[aria-selected="true"] {
+  color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: none;
+}
+
+/* --- Main / panels --- */
+[data-skin="horizon"] main { padding: 16px; }
+
+[data-skin="horizon"] .sidebar,
+[data-skin="horizon"] .content,
+[data-skin="horizon"] .inspector {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: border-color var(--t-fast);
+}
+[data-skin="horizon"] .sidebar:hover,
+[data-skin="horizon"] .content:hover,
+[data-skin="horizon"] .inspector:hover { border-color: var(--border-hover); }
+[data-skin="horizon"] .metrics-content { padding: 20px 24px; }
+
+/* --- Section titles: clean, mixed case, comfortable size --- */
+[data-skin="horizon"] .sidebar-title,
+[data-skin="horizon"] .content-title {
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+[data-skin="horizon"] .content-title .dim { color: var(--fg-mute); font-weight: 400; font-size: 13px; }
+
+/* --- Agent cards (Operations Stations) --- */
+[data-skin="horizon"] .agent-list { gap: 10px; }
+[data-skin="horizon"] .agent-card {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+[data-skin="horizon"] .agent-card:hover { border-color: var(--border-hover); background: var(--bg-3); transform: none; }
+[data-skin="horizon"] .agent-head { font-weight: 600; font-size: 14px; }
+[data-skin="horizon"] .agent-name { color: var(--fg); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .agent-role { color: var(--fg-mute); font-size: 12px; font-weight: 500; margin-top: 4px; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .agent-excerpt { color: var(--fg-mute); font-size: 13px; font-style: normal; margin-top: 8px; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .agent-task-count { margin-top: 10px; font-size: 12px; color: var(--accent); font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+/* --- Station badges: soft colored pills --- */
+[data-skin="horizon"] .agent-station {
+  margin-left: auto;
+  background: transparent;
+  color: var(--fg-mute);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+}
+[data-skin="horizon"] .agent-card[data-agent="ferret"] .agent-station { color: var(--info);   border-color: rgba(121, 192, 255, 0.4); background: rgba(121, 192, 255, 0.08); }
+[data-skin="horizon"] .agent-card[data-agent="scribe"] .agent-station { color: var(--warn);   border-color: rgba(232, 183, 112, 0.4); background: rgba(232, 183, 112, 0.08); }
+[data-skin="horizon"] .agent-card[data-agent="dev"]    .agent-station { color: var(--purple); border-color: rgba(196, 165, 228, 0.4); background: rgba(196, 165, 228, 0.08); }
+
+/* --- Metrics: clean modern cards with thin progress bars --- */
+[data-skin="horizon"] .metric-grid { gap: 12px; }
+[data-skin="horizon"] .metric-card {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+}
+[data-skin="horizon"] .metric-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+[data-skin="horizon"] .metric-label {
+  color: var(--fg-mute);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[data-skin="horizon"] .metric-value {
+  color: var(--fg);
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+[data-skin="horizon"] .metric-detail {
+  margin-top: 6px;
+  color: var(--fg-dim);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[data-skin="horizon"] .bar {
+  height: 6px;
+  background: var(--bg);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+  overflow: hidden;
+}
+[data-skin="horizon"] .bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--r-pill);
+  transition: width var(--t-med), background var(--t-fast);
+  box-shadow: none;
+}
+[data-skin="horizon"] .bar-fill.warn { background: var(--warn); }
+[data-skin="horizon"] .bar-fill.bad  { background: var(--bad); }
+[data-skin="horizon"] .metric-card[data-metric="cpu"]    .bar-fill { background: var(--cpu); }
+[data-skin="horizon"] .metric-card[data-metric="memory"] .bar-fill { background: var(--mem); }
+[data-skin="horizon"] .metric-card[data-metric="storage"] .bar-fill { background: var(--stor); }
+
+[data-skin="horizon"] .metric-footer { color: var(--fg-dim); font-size: 12px; margin-top: 16px; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .metric-footer .dim { color: var(--fg-dim); }
+
+/* --- Bridge-header (Viewscreen) — clean modern card, no scanlines --- */
+[data-skin="horizon"] .bridge-header {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  animation: none;
+}
+/* Hide the LCARS-only decorations (corner brackets, scanline, label) */
+[data-skin="horizon"] .bridge-header::before,
+[data-skin="horizon"] .bridge-header::after { display: none; }
+[data-skin="horizon"] .bridge-header .corner { display: none; }
+
+[data-skin="horizon"] .viewscreen-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+[data-skin="horizon"] .viewscreen-primary {
+  margin-bottom: 6px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+[data-skin="horizon"] .ship-name {
+  color: var(--fg);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  text-shadow: none;
+}
+[data-skin="horizon"] .ship-registry {
+  color: var(--fg-mute);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[data-skin="horizon"] .ship-class {
+  color: var(--fg-dim);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: auto;
+}
+
+[data-skin="horizon"] .viewscreen-clock { margin: 14px 0 8px 0; font-size: 14px; }
+[data-skin="horizon"] .stardate {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  text-shadow: none;
+}
+[data-skin="horizon"] .clock-sep { color: var(--fg-dim); font-size: 12px; }
+[data-skin="horizon"] .local-time {
+  color: var(--fg-mute);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-skin="horizon"] .viewscreen-heading { margin-top: 4px; font-size: 14px; }
+[data-skin="horizon"] .heading-label {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+}
+[data-skin="horizon"] .heading-text {
+  color: var(--fg-mute);
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* --- Ship status pill: subtle, no glow, no flash --- */
+[data-skin="horizon"] .ship-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: all var(--t-fast);
+  animation: none;
+}
+[data-skin="horizon"] .ship-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: none;
+  animation: none;
+}
+[data-skin="horizon"] .ship-status[data-status="nominal"] .ship-status-label { color: var(--good); }
+[data-skin="horizon"] .ship-status[data-status="caution"] { border-color: rgba(232, 183, 112, 0.4); background: rgba(232, 183, 112, 0.08); }
+[data-skin="horizon"] .ship-status[data-status="caution"] .ship-status-dot  { background: var(--warn); }
+[data-skin="horizon"] .ship-status[data-status="caution"] .ship-status-label { color: var(--warn); }
+[data-skin="horizon"] .ship-status[data-status="alert"]   { border-color: rgba(224, 123, 123, 0.4); background: rgba(224, 123, 123, 0.08); }
+[data-skin="horizon"] .ship-status[data-status="alert"]   .ship-status-dot  { background: var(--bad); }
+[data-skin="horizon"] .ship-status[data-status="alert"]   .ship-status-label { color: var(--bad); }
+
+/* --- Brand mark (ship silhouette) — calm accent, no color shift on status --- */
+[data-skin="horizon"] .brand-mark { color: var(--accent); }
+[data-skin="horizon"] .brand-mark[data-status="nominal"],
+[data-skin="horizon"] .brand-mark[data-status="caution"],
+[data-skin="horizon"] .brand-mark[data-status="alert"]   { color: var(--accent); }
+[data-skin="horizon"] .brand-mark { filter: none; animation: none; }
+
+/* --- Captain's Log entries: clean cards, subtle left accent --- */
+[data-skin="horizon"] .log-entry {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color var(--t-fast);
+}
+[data-skin="horizon"] .log-entry:hover { border-color: var(--border-hover); }
+[data-skin="horizon"] .log-entry[data-phase="in-progress"] { border-left-color: var(--info); }
+[data-skin="horizon"] .log-entry[data-phase="done"]        { border-left-color: var(--good); }
+[data-skin="horizon"] .log-entry[data-phase="failed"]      { border-left-color: var(--bad); }
+[data-skin="horizon"] .log-entry[data-phase="blocked"]     { border-left-color: var(--bad); }
+
+[data-skin="horizon"] .log-meta { font-size: 11px; letter-spacing: 0; text-transform: none; color: var(--fg-dim); }
+[data-skin="horizon"] .log-stardate { color: var(--accent); font-weight: 600; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+[data-skin="horizon"] .log-classification {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--bg);
+  color: var(--fg-mute);
+  border: 1px solid var(--border);
+}
+[data-skin="horizon"] .log-entry[data-phase="in-progress"] .log-classification { color: var(--info); border-color: rgba(121, 192, 255, 0.3); }
+[data-skin="horizon"] .log-entry[data-phase="done"]        .log-classification { color: var(--good); border-color: rgba(126, 201, 158, 0.3); }
+[data-skin="horizon"] .log-entry[data-phase="failed"]      .log-classification { color: var(--bad);  border-color: rgba(224, 123, 123, 0.3); }
+[data-skin="horizon"] .log-entry[data-phase="blocked"]     .log-classification { color: var(--bad);  border-color: rgba(224, 123, 123, 0.3); }
+[data-skin="horizon"] .log-title { color: var(--fg); font-size: 14px; font-weight: 500; letter-spacing: 0; text-transform: none; line-height: 1.5; }
+[data-skin="horizon"] .log-byline { color: var(--fg-dim); font-size: 12px; letter-spacing: 0; text-transform: none; opacity: 1; }
+[data-skin="horizon"] .log-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--fg-dim);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+  background: transparent;
+}
+[data-skin="horizon"] .log-empty .dim { font-size: 12px; }
+
+/* --- Schedule tab --- */
+[data-skin="horizon"] .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+[data-skin="horizon"] .schedule-item {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+[data-skin="horizon"] .schedule-item:hover { border-color: var(--border-hover); }
+[data-skin="horizon"] .schedule-time { color: var(--fg-mute); font-size: 13px; font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .schedule-name { color: var(--fg); font-size: 14px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .schedule-detail { color: var(--fg-mute); font-size: 12px; letter-spacing: 0; text-transform: none; }
+[data-skin="horizon"] .cron-badge {
+  font-family: 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--fg-mute);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  letter-spacing: 0;
+}
+
+/* --- Empty states --- */
+[data-skin="horizon"] .empty-state {
+  color: var(--fg-dim);
+  font-style: normal;
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* --- Mobile --- */
+@media (max-width: 720px) {
+  [data-skin="horizon"] .agent-list { gap: 10px; }
+  [data-skin="horizon"] .metric-grid { grid-template-columns: 1fr; }
+  [data-skin="horizon"] .viewscreen-line { flex-wrap: wrap; }
+  [data-skin="horizon"] .ship-class { display: none; }
+}
