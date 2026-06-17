@@ -356,8 +356,16 @@ main { padding: 16px; }
   height: 56px;
   box-shadow: 0 2px 12px rgba(255, 153, 0, 0.15);
 }
-[data-skin="starship"] .brand-mark { color: var(--amber); }
+[data-skin="starship"] .brand-mark { color: var(--amber); transition: color var(--t-med) ease, filter var(--t-med) ease; filter: drop-shadow(0 0 4px currentColor); }
 [data-skin="starship"] .brand-mark svg { width: 40px; height: 24px; }  /* slightly larger for the dark skin */
+[data-skin="starship"] .brand-mark[data-status="nominal"] { color: var(--green); filter: drop-shadow(0 0 4px currentColor); }
+[data-skin="starship"] .brand-mark[data-status="caution"] { color: var(--amber); filter: drop-shadow(0 0 5px currentColor); }
+[data-skin="starship"] .brand-mark[data-status="alert"]   { color: var(--red);   filter: drop-shadow(0 0 8px currentColor); animation: brand-alert-pulse 0.9s ease-in-out infinite; }
+
+@keyframes brand-alert-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
 [data-skin="starship"] .brand-text { color: var(--amber); text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; }
 [data-skin="starship"] .brand-text .dim { color: var(--tan); font-weight: 400; }
 

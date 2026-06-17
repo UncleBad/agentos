@@ -47,6 +47,7 @@
   const uptimeEl = document.getElementById("uptime");
   const shipStatus = document.getElementById("ship-status");
   const shipStatusLabel = shipStatus?.querySelector(".ship-status-label");
+  const brandMark = document.querySelector(".brand-mark");
 
   async function pollMetrics() {
     try {
@@ -88,6 +89,8 @@
       else                  { level = "nominal";  label = "NOMINAL"; }
       shipStatus.setAttribute("data-status", level);
       if (shipStatusLabel) shipStatusLabel.textContent = label;
+      // Mirror status on the brand-mark so the ship silhouette changes color
+      if (brandMark) brandMark.setAttribute("data-status", level);
     }
   }
 
