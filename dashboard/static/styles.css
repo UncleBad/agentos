@@ -97,11 +97,18 @@ html, body {
 main { padding: 16px; }
 .panel[aria-hidden="true"] { display: none; }
 
-.three-panel {
+.two-column {
   display: grid;
-  grid-template-columns: 260px 1fr 280px;
+  grid-template-columns: 1fr 280px;
   gap: 16px;
-  min-height: calc(100vh - 52px - 32px);
+  align-items: start;
+}
+
+.left-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;  /* prevent grid blowout from long metric values */
 }
 
 .two-panel {
@@ -118,6 +125,11 @@ main { padding: 16px; }
   padding: 16px;
   overflow: auto;
 }
+
+/* When metrics sit under the crew, tighten their padding so the
+ * whole left column doesn't feel like a wall of cards. */
+.metrics-content { padding: 12px 16px; }
+.metrics-content .content-title { margin-bottom: 8px; }
 
 .sidebar-title, .content-title {
   font-size: 12px;
@@ -161,24 +173,24 @@ main { padding: 16px; }
   letter-spacing: 0.04em;
 }
 
-/* ===== Metrics (center) ===== */
+/* ===== Metrics (under crew, side-by-side) ===== */
 .metric-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-top: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .metric-card {
   background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 16px;
+  padding: 10px 12px;
 }
-.metric-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
-.metric-label { font-weight: 600; color: var(--fg-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
-.metric-value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.metric-detail { color: var(--fg-dim); font-size: 12px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.metric-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+.metric-label { font-weight: 600; color: var(--fg-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.metric-value { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.metric-detail { color: var(--fg-dim); font-size: 11px; margin-top: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* Bar graph */
 .bar {
@@ -266,7 +278,9 @@ main { padding: 16px; }
 
 /* ===== Mobile ===== */
 @media (max-width: 900px) {
-  .three-panel { grid-template-columns: 1fr; }
+  .two-column { grid-template-columns: 1fr; }
   .two-panel { grid-template-columns: 1fr; }
   .inspector { order: 3; }
+  /* On narrow screens, stack the metric cards vertically again */
+  .metric-grid { grid-template-columns: 1fr; }
 }
