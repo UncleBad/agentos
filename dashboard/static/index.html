@@ -9,7 +9,27 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="brand-mark">⚓</span>
+      <span class="brand-mark" aria-hidden="true">
+        <!-- Starship silhouette (Galaxy-class style) — the "modern anchor" -->
+        <svg viewBox="0 0 36 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Saucer section (top oval) -->
+          <ellipse cx="18" cy="6" rx="11" ry="2.8"/>
+          <!-- Saucer rim highlight -->
+          <ellipse cx="18" cy="6" rx="7.5" ry="1.7" opacity="0.45"/>
+          <!-- Neck (single trapezoid, thicker visual weight) -->
+          <path d="M 14.5 8.5 L 16 10.5 L 20 10.5 L 21.5 8.5 Z" fill="currentColor" fill-opacity="0.25"/>
+          <!-- Engineering hull (filled, prominent) -->
+          <path d="M 16 10.5 L 20 10.5 L 19.5 18 L 16.5 18 Z" fill="currentColor" fill-opacity="0.4"/>
+          <!-- Deflector dish (front bright dot) -->
+          <circle cx="18" cy="18" r="1.2" fill="currentColor"/>
+          <!-- Nacelle pylons (thicker so they don't disappear) -->
+          <path d="M 16 12 L 8 14" stroke-width="2"/>
+          <path d="M 20 12 L 28 14" stroke-width="2"/>
+          <!-- Warp nacelles (closer in, larger) -->
+          <ellipse cx="6" cy="14.5" rx="4" ry="1.4" transform="rotate(20 6 14.5)"/>
+          <ellipse cx="30" cy="14.5" rx="4" ry="1.4" transform="rotate(-20 30 14.5)"/>
+        </svg>
+      </span>
       <span class="brand-text">AgentOS <span class="dim">/ Captain</span></span>
     </div>
     <nav class="tabs" role="tablist">

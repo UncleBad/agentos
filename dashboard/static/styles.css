@@ -69,7 +69,8 @@ html, body {
 }
 
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; }
-.brand-mark { font-size: 18px; color: var(--accent); }
+.brand-mark { color: var(--accent); display: inline-flex; align-items: center; }
+.brand-mark svg { display: block; width: 34px; height: 21px; }
 .brand-text .dim { font-weight: 400; }
 
 .tabs { display: flex; gap: 4px; margin-left: 16px; }
@@ -355,7 +356,8 @@ main { padding: 16px; }
   height: 56px;
   box-shadow: 0 2px 12px rgba(255, 153, 0, 0.15);
 }
-[data-skin="starship"] .brand-mark { color: var(--amber); font-size: 22px; }
+[data-skin="starship"] .brand-mark { color: var(--amber); }
+[data-skin="starship"] .brand-mark svg { width: 40px; height: 24px; }  /* slightly larger for the dark skin */
 [data-skin="starship"] .brand-text { color: var(--amber); text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; }
 [data-skin="starship"] .brand-text .dim { color: var(--tan); font-weight: 400; }
 
