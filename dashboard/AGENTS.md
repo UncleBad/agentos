@@ -54,10 +54,12 @@ fix this with a venv — fix it with the system package manager.
 
 | Data | Interval | Why |
 |---|---|---|
-| Metrics | 2s | Cheap, makes the bars feel live |
-| Agents + tasks | 15s | Changes less often; vault I/O |
+| Metrics | 10s | Bradley's "look at the ship's overall progress" — glance, not live ticker |
+| Agents + tasks | 10s | Match metrics; both feel like a single calm heartbeat |
 
-Don't tighten these without measuring CPU impact first.
+Don't tighten these without measuring CPU impact first. The
+dashboard is for human glances, not real-time monitoring — if you
+need live metrics, drop into the systemd journal or `htop`.
 
 ## Conventions
 

@@ -271,6 +271,6 @@
   pollMetrics();
   loadAgents();
   setInterval(tickClock, 1000);
-  setInterval(pollMetrics, 2000);
-  setInterval(loadAgents, 15000);  // agents/tasks change less often
+  setInterval(pollMetrics, 10000);  // ship's overall progress, no need to tick faster than this
+  setInterval(loadAgents, 10000);   // agents/tasks — match metrics polling
 })();
