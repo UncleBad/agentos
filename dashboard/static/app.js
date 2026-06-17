@@ -41,20 +41,11 @@
     return "";
   }
 
-  /**
-   * Compute a TNG-style 5-digit stardate from a real date.
-   * Formula: SD = (Y - 2000) * 1000 + (day_of_year / 365.25) * 1000
-   * The "- 2000" base gives 5-digit numbers for our era (e.g. 2026 → 26XXX);
-   * the year-fraction term gives 1 decimal of resolution per day.
-   */
-  function computeStardate(date) {
-    date = date || new Date();
-    const year = date.getUTCFullYear();
-    const start = Date.UTC(year, 0, 0);
-    const diff = date.getTime() - start;
-    const dayOfYear = Math.floor(diff / 86400000);
-    const yearFrac = (dayOfYear - 1) / 365.25;
-    return ((year - 2000) * 1000 + yearFrac * 1000).toFixed(1);
+  /** Format a Date as a short weekday + day + month + year, e.g. "Tue 16 Jun 2026". */
+  function fmtDate(d) {
+    return d.toLocaleDateString("en-GB", {
+      weekday: "short", day: "2-digit", month: "short", year: "numeric",
+    });
   }
 
   function fmtLocalTime(d) {
@@ -173,15 +164,15 @@
         .slice(0, 10);
 
       if (recent.length === 0) {
-        list.innerHTML = `<li class="dim log-empty">No entries in the Captain's log yet.<br><span class="dim">Tasks are recorded automatically when they begin.</span></li>`;
+        list.innerHTML = `<li class="dim log-empty">No recent activity yet.<br><span class="dim">Tasks are recorded automatically when they begin.</span></li>`;
       } else {
-        const sd = computeStardate();
         list.innerHTML = recent.map((t) => {
           const c = classifyTask(t.phase);
+          const taskDate = t.created ? fmtDate(new Date(t.created)) : "";
           return `
           <li class="log-entry" data-phase="${t.phase}">
             <div class="log-meta">
-              <span class="log-stardate">SD ${sd}</span>
+              <span class="log-date">${taskDate}</span>
               <span class="log-classification ${c.cls}">${c.tag}</span>
             </div>
             <div class="log-title">${escapeHtml(t.title)}</div>
@@ -256,14 +247,14 @@
       .replace(/'/g, "&#39;");
   }
 
-  // -------- Bridge viewscreen clock --------
-  const stardateEl = document.getElementById("stardate");
-  const localTimeEl = document.getElementById("local-time");
+  // -------- Bridge clock (now showing real date + time) --------
+  const dateEl = document.getElementById("current-date");
+  const timeEl = document.getElementById("current-time");
 
   function tickClock() {
     const now = new Date();
-    if (stardateEl)  stardateEl.textContent = `STARDATE ${computeStardate(now)}`;
-    if (localTimeEl) localTimeEl.textContent = `LOCAL ${fmtLocalTime(now)}`;
+    if (dateEl) dateEl.textContent = fmtDate(now);
+    if (timeEl) timeEl.textContent = fmtLocalTime(now);
   }
 
   // -------- Bootstrap --------

@@ -62,9 +62,9 @@
           <span class="ship-class">Galaxy&nbsp;Class</span>
         </div>
         <div class="viewscreen-line viewscreen-clock">
-          <span class="stardate" id="stardate">STARDATE —</span>
-          <span class="clock-sep">◆</span>
-          <span class="local-time" id="local-time">LOCAL —</span>
+          <span class="current-date" id="current-date">—</span>
+          <span class="clock-sep">·</span>
+          <span class="current-time" id="current-time">—</span>
         </div>
         <div class="viewscreen-line viewscreen-heading">
           <span class="heading-label">HEADING</span>
@@ -118,7 +118,7 @@
             <div class="metric-grid">
               <div class="metric-card" data-metric="memory">
                 <div class="metric-head">
-                  <span class="metric-label">Deflector Shields</span>
+                  <span class="metric-label">Memory</span>
                   <span class="metric-value" id="mem-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="mem-bar"></div></div>
@@ -127,7 +127,7 @@
 
               <div class="metric-card" data-metric="cpu">
                 <div class="metric-head">
-                  <span class="metric-label">Warp Core</span>
+                  <span class="metric-label">CPU</span>
                   <span class="metric-value" id="cpu-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="cpu-bar"></div></div>
@@ -136,7 +136,7 @@
 
               <div class="metric-card" data-metric="storage">
                 <div class="metric-head">
-                  <span class="metric-label">Cargo Bay</span>
+                  <span class="metric-label">Storage</span>
                   <span class="metric-value" id="stor-value">—</span>
                 </div>
                 <div class="bar"><div class="bar-fill" id="stor-bar"></div></div>
@@ -164,15 +164,15 @@
     <!-- ============ SCHEDULE TAB ============ -->
     <section class="panel" id="panel-schedule" role="tabpanel" aria-hidden="true">
       <div class="two-panel">
-        <section class="content" aria-label="Standing Orders">
-          <h2 class="content-title">Standing Orders <span class="dim">/ system cron · /etc/cron.d + crontab</span></h2>
+        <section class="content" aria-label="System Cron">
+          <h2 class="content-title">System Cron <span class="dim">/ /etc/cron.d + crontab</span></h2>
           <div id="system-cron">
             <p class="dim">Loading…</p>
           </div>
         </section>
 
-        <section class="content" aria-label="Mission Timeline">
-          <h2 class="content-title">Mission Timeline <span class="dim">/ hermes scheduled tasks</span></h2>
+        <section class="content" aria-label="AgentOS Schedule">
+          <h2 class="content-title">AgentOS Schedule <span class="dim">/ hermes scheduled tasks</span></h2>
           <div id="hermes-cron">
             <p class="dim">Loading…</p>
           </div>
