@@ -16,11 +16,11 @@ reverse proxy).
 
 ## Architecture constraints
 
-- **Bind to 127.0.0.1:3001 only.** freellmapi's bare-metal default
-  is `::` (all interfaces). Override with `HOST=127.0.0.1` in `.env`.
-  ufw already allows this (loopback is always allowed). No public
-  exposure — if Bradley ever needs external access, use Tailscale
-  or SSH tunnel, NOT a reverse proxy.
+- **Bind to 100.98.6.47:3001 (Tailscale only).** freellmapi's bare-metal
+  default is `::` (all interfaces). Override with `HOST=100.98.6.47` in
+  `.env`. ufw restricts 3001/tcp to `100.64.0.0/10` (Tailscale subnet).
+  No public exposure — if Bradley ever needs external access, use SSH
+  tunnel, NOT a reverse proxy.
 - **Do NOT put behind nginx/Caddy.** `trust proxy = false` is
   load-bearing for the current security model — see Ferret's review
   for the localhost-bypass-via-XFF history.
