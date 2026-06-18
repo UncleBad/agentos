@@ -138,6 +138,38 @@ main { padding: 16px; }
 #panel-routing .two-panel {
   min-height: auto;
 }
+
+/* ---- Daily logs section ---- */
+.logs-section {
+  margin-top: 16px;
+}
+.logs-section .content-title {
+  margin-bottom: 8px;
+}
+.daily-logs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.daily-log-entry {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.15);
+}
+.daily-log-entry .log-date {
+  font-weight: 500;
+  color: #7eb6ff;
+}
+.daily-log-entry .log-title {
+  margin-top: 4px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
 .gateway-card {
   display: flex;
   align-items: center;

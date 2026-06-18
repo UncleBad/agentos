@@ -215,6 +215,57 @@ def get_schedule() -> dict:
     }
 
 
+# ---- Daily Logs --------------------------------------------------------------
+DAILY_DIR = Path("/home/omar/BradleyVault/Daily")
+
+
+def get_logs() -> list[dict]:
+    """Read recent daily notes from the vault. Returns newest first."""
+    if not DAILY_DIR.is_dir():
+        return []
+    logs = []
+    for f in sorted(DAILY_DIR.glob("*.md"), reverse=True)[:7]:
+        try:
+            text = f.read_text()
+        except OSError:
+            continue
+        # Parse frontmatter
+        fm = {}
+        body = text
+        if text.startswith("---"):
+            end = text.find("\n---", 3)
+            if end > 0:
+                fm_block = text[3:end]
+                body = text[end + 4:]
+                for ln in fm_block.splitlines():
+                    if ":" in ln:
+                        k, _, v = ln.partition(":")
+                        fm[k.strip()] = v.strip()
+        # Extract Wins section if present, else first content lines
+        excerpt = ""
+        wins_idx = body.find("## Wins")
+        if wins_idx >= 0:
+            wins_block = body[wins_idx:]
+            # Take until next ## heading
+            next_h2 = wins_block.find("\n## ", 4)
+            if next_h2 > 0:
+                wins_block = wins_block[:next_h2]
+            wins_lines = [l.strip().lstrip("- ").strip()
+                          for l in wins_block.splitlines()
+                          if l.strip() and not l.startswith("##")]
+            excerpt = " ".join(wins_lines[:3])[:300]
+        if not excerpt:
+            lines = [l.strip() for l in body.splitlines()
+                     if l.strip() and not l.startswith("#") and not l.startswith("---")]
+            excerpt = " ".join(lines[:3])[:300]
+        logs.append({
+            "date": fm.get("date", f.stem),
+            "excerpt": excerpt or "(no content)",
+            "file": f.name,
+        })
+    return logs
+
+
 # ---- Routing ----------------------------------------------------------------
 FREEAPI_DB = Path("/home/omar/agentos/freellmapi/src/server/data/freeapi.db")
 
@@ -390,6 +441,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return self._serve_json(get_schedule())
         if path == "/api/health":
             return self._serve_json({"status": "ok"})
+        if path == "/api/logs":
+            return self._serve_json({"logs": get_logs()})
         if path == "/api/routing":
             return self._serve_json(get_routing())
         return self._send_error(404, f"No route for {path}")

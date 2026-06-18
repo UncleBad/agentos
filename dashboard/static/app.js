@@ -238,6 +238,38 @@
     </tr>`;
   }
 
+  // -------- Daily Logs --------
+  async function loadLogs() {
+    try {
+      const res = await fetch("/api/logs");
+      if (!res.ok) return;
+      const data = await res.json();
+      renderLogs(data.logs || []);
+    } catch (e) {
+      console.error("logs load failed:", e);
+    }
+  }
+
+  function renderLogs(logs) {
+    const el = document.getElementById("daily-logs");
+    if (!el) return;
+    if (logs.length === 0) {
+      el.innerHTML = `<li class="dim">No logs yet.</li>`;
+      return;
+    }
+    el.innerHTML = logs.map((log) => {
+      const d = log.date ? fmtDate(new Date(log.date)) : "—";
+      return `
+        <li class="log-entry daily-log-entry">
+          <div class="log-meta">
+            <span class="log-date">${d}</span>
+          </div>
+          <div class="log-title">${escapeHtml(log.excerpt)}</div>
+        </li>
+      `;
+    }).join("");
+  }
+
   // -------- Routing (freellmapi gateway) --------
   async function loadRouting() {
     try {
@@ -359,8 +391,10 @@
   pollMetrics();
   loadAgents();
   loadRouting();
+  loadLogs();
   setInterval(tickClock, 1000);
   setInterval(pollMetrics, 10000);  // ship's overall progress, no need to tick faster than this
   setInterval(loadAgents, 10000);   // agents/tasks — match metrics polling
   setInterval(loadRouting, 10000);  // routing — match metrics polling
+  setInterval(loadLogs, 30000);     // daily logs — change infrequently
 })();
