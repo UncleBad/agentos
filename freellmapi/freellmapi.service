@@ -19,7 +19,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/home/omar/agentos/freellmapi/data /home/omar/agentos/freellmapi/.secrets
+ReadWritePaths=/home/omar/agentos/freellmapi/src/server/data /home/omar/agentos/freellmapi/.secrets
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true
@@ -27,7 +27,7 @@ RestrictSUIDSGID=true
 LockPersonality=true
 RestrictRealtime=true
 RestrictNamespaces=true
-MemoryDenyWriteExecute=true
+# MemoryDenyWriteExecute=true  # DO NOT ENABLE — V8 JIT needs WX memory, this kills Node
 
 # Resource limits (a single-user gateway is small)
 LimitNOFILE=65536

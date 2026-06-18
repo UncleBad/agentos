@@ -50,9 +50,18 @@ if [[ ! -s .env ]]; then
   echo "  copying .env.example -> .env"
   cp .env.example .env
   chmod 600 .env
+  # Inject the generated key into .env
+  KEY=$(cat .secrets/encryption_key)
+  sed -i "s|^ENCRYPTION_KEY=.*|ENCRYPTION_KEY=${KEY}|" .env
 else
   echo "  .env already exists (kept as-is)"
 fi
+# Ensure .env is also in src/ (app's CWD)
+cp .env src/.env
+
+echo
+echo "=== STEP 4b: create data directory ==="
+mkdir -p src/server/data
 
 echo
 echo "=== STEP 5: install systemd unit ==="
