@@ -1,0 +1,38 @@
+[Unit]
+Description=freellmapi — multi-provider LLM gateway for AgentOS
+Documentation=https://github.com/tashfeenahmed/freellmapi
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=omar
+Group=omar
+WorkingDirectory=/home/omar/agentos/freellmapi/src
+EnvironmentFile=/home/omar/agentos/freellmapi/.env
+ExecStart=/home/omar/.hermes/node/bin/node server/dist/index.js
+Restart=on-failure
+RestartSec=5s
+
+# Hardening (mirrors agentos-dashboard.service)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/omar/agentos/freellmapi/data /home/omar/agentos/freellmapi/.secrets
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictNamespaces=true
+MemoryDenyWriteExecute=true
+
+# Resource limits (a single-user gateway is small)
+LimitNOFILE=65536
+MemoryMax=512M
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target

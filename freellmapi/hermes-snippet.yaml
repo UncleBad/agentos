@@ -1,0 +1,45 @@
+# Hermes custom_providers — wire AgentOS sub-agents to freellmapi.
+# Copy the relevant block(s) into ~/.hermes/config.yaml under
+# `custom_providers:`. After copying:
+#   1. Restart Hermes (new session picks up providers)
+#   2. Verify with: hermes models  (or just try a task)
+#
+# Reference: https://github.com/tashfeenahmed/freellmapi#openai-compatible
+# Bradley's review: BradleyVault/wiki/freellmapi-spike.md
+
+custom_providers:
+
+  # === Ferret (research) ===
+  # Most token-hungry agent — route through free-tier gateway first.
+  # `auto` lets freellmapi pick the best available model from the
+  # user's enabled providers (Groq, OpenRouter, etc.).
+  # Falls back automatically on rate-limit; X-Fallback-Attempts header
+  # reports the chain.
+  ferret_research:
+    base_url: http://127.0.0.1:3001/v1
+    api_key: ${FREELLMAPI_UNIFIED_KEY}
+    model: auto
+
+  # === Scribe (writing) ===
+  # Pinned to Gemini 2.5 Flash — fast, cheap, good for prose.
+  # If rate-limited, freellmapi will try the fallback chain (configured
+  # on the freellmapi dashboard); pin tighter here if you need exact
+  # model behavior.
+  scribe_writing:
+    base_url: http://127.0.0.1:3001/v1
+    api_key: ${FREELLMAPI_UNIFIED_KEY}
+    model: google/gemini-2.5-flash
+
+  # === Dev (engineering) ===
+  # Pinned to Groq Llama 3.3 70B — fast inference for code.
+  dev_coding:
+    base_url: http://127.0.0.1:3001/v1
+    api_key: ${FREELLMAPI_UNIFIED_KEY}
+    model: groq/llama-3.3-70b-versatile
+
+# Notes on env var resolution:
+# - `${FREELLMAPI_UNIFIED_KEY}` is set in ~/.hermes/.env
+# - Get the unified key from the freellmapi dashboard after first-run
+#   setup (Settings → Tokens → Generate)
+# - The same key works for all three providers — freellmapi does the
+#   routing, not Hermes
