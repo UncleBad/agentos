@@ -129,6 +129,43 @@ main { padding: 16px; }
   min-height: calc(100vh - 52px - 32px);
 }
 
+#panel-routing {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#panel-routing .two-panel {
+  min-height: auto;
+}
+.gateway-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.gateway-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gateway-status-dot[data-status="online"] {
+  background: var(--status-good, #7ec699);
+  box-shadow: 0 0 6px var(--status-good, #7ec699);
+}
+.gateway-status-dot[data-status="offline"] {
+  background: var(--status-bad, #e07a7a);
+}
+.gateway-status-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.gateway-total {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
 .sidebar, .content, .inspector {
   background: var(--bg-2);
   border: 1px solid var(--border);

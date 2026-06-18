@@ -26,6 +26,7 @@ import argparse
 import json
 import os
 import re
+import sqlite3
 import subprocess
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -214,6 +215,71 @@ def get_schedule() -> dict:
     }
 
 
+# ---- Routing ----------------------------------------------------------------
+FREEAPI_DB = Path("/home/omar/agentos/freellmapi/src/server/data/freeapi.db")
+
+
+def get_routing() -> dict:
+    """Query freellmapi SQLite DB for gateway status and request history."""
+    if not FREEAPI_DB.is_file():
+        return {
+            "gateway_status": "offline",
+            "total_requests": 0,
+            "recent_requests": [],
+            "provider_stats": [],
+            "rate_limited": [],
+        }
+
+    try:
+        conn = sqlite3.connect(str(FREEAPI_DB))
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        total = c.execute("SELECT COUNT(*) FROM requests").fetchone()[0]
+
+        recent = [
+            dict(row)
+            for row in c.execute(
+                "SELECT id, platform, model_id, status, input_tokens, output_tokens, latency_ms, created_at "
+                "FROM requests ORDER BY id DESC LIMIT 10"
+            ).fetchall()
+        ]
+
+        provider_stats = [
+            dict(row)
+            for row in c.execute(
+                "SELECT platform, COUNT(*) as count, AVG(latency_ms) as avg_latency, MAX(created_at) as last_seen "
+                "FROM requests GROUP BY platform"
+            ).fetchall()
+        ]
+
+        rate_limited = [
+            dict(row)
+            for row in c.execute(
+                "SELECT platform, model_id, key_id, expires_at_ms, created_at FROM rate_limit_cooldowns"
+            ).fetchall()
+        ]
+
+        conn.close()
+    except Exception as e:
+        sys.stderr.write(f"[dashboard] routing query error: {e}\n")
+        return {
+            "gateway_status": "offline",
+            "total_requests": 0,
+            "recent_requests": [],
+            "provider_stats": [],
+            "rate_limited": [],
+        }
+
+    return {
+        "gateway_status": "online",
+        "total_requests": total,
+        "recent_requests": recent,
+        "provider_stats": provider_stats,
+        "rate_limited": rate_limited,
+    }
+
+
 # ---- Agents -----------------------------------------------------------------
 def get_agents() -> list[dict]:
     """
@@ -324,6 +390,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return self._serve_json(get_schedule())
         if path == "/api/health":
             return self._serve_json({"status": "ok"})
+        if path == "/api/routing":
+            return self._serve_json(get_routing())
         return self._send_error(404, f"No route for {path}")
 
     # ---- Helpers ----

@@ -11,6 +11,7 @@
   const panels = {
     dashboard: document.getElementById("panel-dashboard"),
     schedule:  document.getElementById("panel-schedule"),
+    routing:   document.getElementById("panel-routing"),
   };
 
   tabs.forEach((tab) => {
@@ -19,6 +20,7 @@
       tabs.forEach((t) => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
       Object.entries(panels).forEach(([k, p]) => p.setAttribute("aria-hidden", k === name ? "false" : "true"));
       if (name === "schedule") loadSchedule();
+      if (name === "routing") loadRouting();
     });
   });
 
@@ -236,6 +238,101 @@
     </tr>`;
   }
 
+  // -------- Routing (freellmapi gateway) --------
+  async function loadRouting() {
+    try {
+      const res = await fetch("/api/routing");
+      if (!res.ok) return;
+      const data = await res.json();
+      renderRouting(data);
+    } catch (e) {
+      console.error("routing load failed:", e);
+    }
+  }
+
+  function renderRouting(data) {
+    // Gateway status
+    const dot = document.getElementById("gateway-status-dot");
+    const label = document.getElementById("gateway-status-label");
+    const total = document.getElementById("gateway-total");
+    if (dot) dot.setAttribute("data-status", data.gateway_status);
+    if (label) label.textContent = data.gateway_status === "online" ? "Online" : "Offline";
+    if (total) total.textContent = `${data.total_requests} requests`;
+
+    // Provider stats
+    const psEl = document.getElementById("provider-stats");
+    if (psEl) {
+      if (!data.provider_stats || data.provider_stats.length === 0) {
+        psEl.innerHTML = `<p class="dim">No provider activity yet.</p>`;
+      } else {
+        const rows = data.provider_stats.map((p) => `
+          <tr>
+            <td>${escapeHtml(p.platform)}</td>
+            <td>${p.count}</td>
+            <td>${p.avg_latency ? Math.round(p.avg_latency) + "ms" : "—"}</td>
+            <td class="dim">${escapeHtml(p.last_seen || "—")}</td>
+          </tr>
+        `).join("");
+        psEl.innerHTML = `
+          <table class="cron-table">
+            <thead><tr><th>Provider</th><th>Requests</th><th>Avg Latency</th><th>Last Seen</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+    }
+
+    // Recent requests
+    const rrEl = document.getElementById("recent-requests");
+    if (rrEl) {
+      if (!data.recent_requests || data.recent_requests.length === 0) {
+        rrEl.innerHTML = `<p class="dim">No requests yet.</p>`;
+      } else {
+        const rows = data.recent_requests.map((r) => {
+          const statusCls = r.status === "success" ? "" : "warn";
+          return `
+          <tr>
+            <td class="dim">${escapeHtml(r.created_at || "—")}</td>
+            <td>${escapeHtml(r.platform)}</td>
+            <td>${escapeHtml(r.model_id || "—")}</td>
+            <td>${r.input_tokens || 0}/${r.output_tokens || 0}</td>
+            <td>${r.latency_ms ? r.latency_ms + "ms" : "—"}</td>
+            <td class="${statusCls}">${escapeHtml(r.status)}</td>
+          </tr>
+          `;
+        }).join("");
+        rrEl.innerHTML = `
+          <table class="cron-table">
+            <thead><tr><th>Time</th><th>Provider</th><th>Model</th><th>Tokens In/Out</th><th>Latency</th><th>Status</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+    }
+
+    // Rate limited
+    const rlEl = document.getElementById("rate-limited");
+    if (rlEl) {
+      if (!data.rate_limited || data.rate_limited.length === 0) {
+        rlEl.innerHTML = `<p class="dim">No active rate limits.</p>`;
+      } else {
+        const rows = data.rate_limited.map((r) => `
+          <tr>
+            <td>${escapeHtml(r.platform)}</td>
+            <td>${escapeHtml(r.model_id || "—")}</td>
+            <td class="dim">${escapeHtml(r.created_at || "—")}</td>
+          </tr>
+        `).join("");
+        rlEl.innerHTML = `
+          <table class="cron-table">
+            <thead><tr><th>Provider</th><th>Model</th><th>Since</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+    }
+  }
+
   // -------- Utils --------
   function escapeHtml(s) {
     if (s == null) return "";
@@ -261,7 +358,9 @@
   tickClock();
   pollMetrics();
   loadAgents();
+  loadRouting();
   setInterval(tickClock, 1000);
   setInterval(pollMetrics, 10000);  // ship's overall progress, no need to tick faster than this
   setInterval(loadAgents, 10000);   // agents/tasks — match metrics polling
+  setInterval(loadRouting, 10000);  // routing — match metrics polling
 })();
