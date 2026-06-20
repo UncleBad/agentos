@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-skin="horizon">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streaming Guide</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="guide-header">
+  <h1>Streaming Guide</h1>
+  <div class="guide-controls">
+    <input type="search" id="search" placeholder="Search shows..." autocomplete="off">
+    <div class="time-nav">
+      <button id="prev-time">&larr;</button>
+      <span id="time-label">Now</span>
+      <button id="next-time">&rarr;</button>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+  <div class="guide-loading">Loading listings...</div>
+</main>
+
+<div id="show-detail" class="detail-panel hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
