@@ -44,4 +44,5 @@ After any meaningful change:
 
 | Path | Purpose | Local rules |
 |---|---|---|
+| `surfduck/` | SurfDuck — curated TV guide grid. surfduck.tv. | Read `surfduck/AGENTS.md` before editing. |
 | `dashboard/` | Self-hosted web dashboard — VPS metrics, 3-agent status, schedule view. Served to Tailscale devices. | Read `dashboard/AGENTS.md` before editing. |
