@@ -1,4 +1,4 @@
-// Streaming Guide — grid rendering and interaction logic
+// SurfDuck — grid rendering and interaction logic
 let currentShows = [];
 let timeOffset = 0;
 

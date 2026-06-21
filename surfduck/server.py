@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Streaming Guide — broadcast + streaming listings in a TV Guide grid."""
+"""SurfDuck — curated TV guide. Find what's worth watching."""
 import json
 import os
 import sqlite3
